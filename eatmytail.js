@@ -65,6 +65,7 @@ window.onload = (function() {
 			}).collision().onHit("food", function() {
 				this.length += 1;
 				//this.speed -= 1;
+				Crafty.e("2D, Canvas, Collision, shroom, food");
 			});
 
 			Crafty.c("food", {
