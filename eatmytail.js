@@ -20,6 +20,8 @@ window.onload = (function() {
 	Crafty.scene("main", function() {
 		Crafty.background("url('grid.png')");
 		
+		var segments = new Array();
+		
 		var snake = Crafty.e("2D, Canvas, Mouse, Controls, Collision, snake")
 			.attr( {x: BOARD_ROWS / 2 * 16, y: BOARD_COLS / 2 * 16, width: 16, height: 16, direction: 1, frame: 1, length: 1, speed: 25} )
 			.bind("Click", function() {
@@ -28,7 +30,6 @@ window.onload = (function() {
 					direction = 0;
 			})
 			.bind("KeyDown", function(e) {
-				console.log("keydown");
 				if (e.keyCode === Crafty.keys.SPACE) {
 					this.direction += 1;
 					if (this.direction == 4)
@@ -38,6 +39,18 @@ window.onload = (function() {
 			.bind("EnterFrame", function() {
 				this.frame++;
 				if (this.frame % this.speed == 0) {
+
+					if (segments.length > 0) {
+						for (var i=segments.length-1; i > 0; i--) {
+							var s = segments[i];
+							var t = segments[i-1];
+							s.x = t.x;
+							s.y = t.y;
+						}
+						segments[0].x = this.x;
+						segments[0].y = this.y;
+					}
+
 					if (this.direction == 1) {
 						this.x += 16;
 						if (this.x >= WIDTH)
@@ -59,13 +72,15 @@ window.onload = (function() {
 							this.y = 0;
 					}
 				}
-//				if (this.frame % 25) console.log("direction=" + this.direction);
 			}).collision().onHit("snake", function() {
 				console.log("hit");
 			}).collision().onHit("food", function() {
 				this.length += 1;
 				//this.speed -= 1;
 				Crafty.e("2D, Canvas, Collision, shroom, food");
+				var s = Crafty.e("2D, Canvas, Collision, snake")
+											.attr( {x: snake.x, y: snake.y, width: 16, height: 16} );
+				segments.push(s);
 			});
 
 			Crafty.c("food", {
