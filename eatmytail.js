@@ -21,6 +21,7 @@ window.onload = (function() {
 		Crafty.background("url('grid.png')");
 		
 		var segments = new Array();
+		var showHint = true;
 		
 		var snake = Crafty.e("2D, Canvas, Mouse, Controls, Collision, snake")
 			.attr( {x: BOARD_ROWS / 2 * 16, y: BOARD_COLS / 2 * 16, width: 16, height: 16, direction: 1, frame: 1, length: 1, speed: 25} )
@@ -31,6 +32,7 @@ window.onload = (function() {
 			})
 			.bind("KeyDown", function(e) {
 				if (e.keyCode === Crafty.keys.SPACE) {
+					showHint = false;
 					this.direction += 1;
 					if (this.direction == 4)
 						this.direction = 0;
@@ -38,6 +40,15 @@ window.onload = (function() {
 			})
 			.bind("EnterFrame", function() {
 				this.frame++;
+				if (showHint && this.frame % 1000 == 0) {					
+					var tip = Crafty.e("2D, DOM, Tween, Image").image("hint.png", "no-repeat").attr({x: (512-176)/2, y: (512-22)/4, w: 176, h: 22, alpha: 0, z: -999})
+					setTimeout( function() {
+						tip.tween({alpha: 1}, 200);				
+						setTimeout( function() {
+							tip.tween({alpha: 0}, 200);				
+						}, 4400);
+					}, 1100);
+				}
 				if (this.frame % this.speed == 0) {
 
 					if (segments.length > 0) {
@@ -96,7 +107,7 @@ window.onload = (function() {
 			});
 			
 			Crafty.e("2D, Canvas, Collision, shroom, food");
-			var bg = Crafty.e("2D, DOM, Tween, Image").image("title.png", "no-repeat").attr({x: 512-128-32, y: 512-128-32, w: 128, h: 32, alpha: 0, z: -999})
+			var bg = Crafty.e("2D, DOM, Tween, Image").image("title_shadow.png", "no-repeat").attr({x: 512-128-32, y: 512-128-32, w: 128, h: 32, alpha: 0, z: -999})
 			setTimeout( function() {
 				bg.tween({alpha: 1}, 300);				
 				setTimeout( function() {
