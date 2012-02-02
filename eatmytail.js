@@ -87,7 +87,7 @@ window.onload = (function() {
 				console.log("hit");
 			}).collision().onHit("food", function() {
 				this.length += 1;
-				//this.speed -= 1;
+				if (this.speed > 5) this.speed = Math.round(25 - (this.length-1/2));				
 				Crafty.e("2D, Canvas, Collision, shroom, food");
 				var s = Crafty.e("2D, Canvas, Collision, snake")
 											.attr( {x: snake.x, y: snake.y, width: 16, height: 16} );
