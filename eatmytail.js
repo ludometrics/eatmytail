@@ -12,6 +12,7 @@ window.onload = (function() {
 	
 	Crafty.load(["snake.png", "shroom.png", "title.png"], function() {
 		Crafty.sprite( 16, "snake.png", { snake: [0, 0] } );
+		Crafty.sprite( 16, "snake.png", { tail: [0, 0] } );
 		Crafty.sprite( 16, "shroom.png", { shroom: [0, 0] } );
 		
 		Crafty.scene("main");
@@ -22,19 +23,14 @@ window.onload = (function() {
 		
 		var segments = new Array();
 		var showHint = true;
-		var moveQueue = 0;
+		var scored = false;
 		
 		var snake = Crafty.e("2D, Canvas, Mouse, Controls, Collision, snake")
-			.attr( {x: BOARD_ROWS / 2 * 16, y: BOARD_COLS / 2 * 16, width: 16, height: 16, direction: 1, frame: 1, length: 1, speed: 25} )
-			.bind("Click", function() {
-				direction += 1;
-				if (direction == 4)
-					direction = 0;
-			})
+			.attr( {x: BOARD_ROWS / 2 * 16, y: BOARD_COLS / 2 * 16, width: 16, height: 16, direction: 1, frame: 1, speed: 25, crashed: false, moveQueue: 0 } )
 			.bind("KeyDown", function(e) {
 				if (e.keyCode === Crafty.keys.SPACE) {
 					showHint = false;
-					moveQueue += 1;
+					this.moveQueue += 1;
 				}
 			})
 			.bind("EnterFrame", function() {
@@ -49,10 +45,10 @@ window.onload = (function() {
 					}, 1100);
 				}
 				
-				if (this.frame % this.speed == 0) {
+				if (this.frame % this.speed == 0 && !this.crashed) {
 
-					if (moveQueue > 0) {
-						moveQueue -= 1;
+					if (this.moveQueue > 0) {
+						this.moveQueue -= 1;
 						this.direction += 1;
 						if (this.direction == 4)
 							this.direction = 0;
@@ -90,22 +86,37 @@ window.onload = (function() {
 							this.y = 0;
 					}
 				}
-			}).collision().onHit("snake", function() {
-				console.log("hit");
+			}).collision().onHit("tail", function() {
+				if (segments.length > 1 && !this.crashed) {
+					this.crashed = true;
+				}
 			}).collision().onHit("food", function() {
-				this.length += 1;
 				if (this.speed > 5) this.speed = Math.round(25 - (this.length-1/2));				
 				Crafty.e("2D, Canvas, Collision, shroom, food");
-				var s = Crafty.e("2D, Canvas, Collision, snake")
-											.attr( {x: snake.x, y: snake.y, width: 16, height: 16} );
+				var sg;
+				if (segments.length > 0) {
+					sg = segments[segments.length-1];
+				}
+				else {
+					sg = this;
+				}
+				var s = Crafty.e("2D, Canvas, Collision, tail")
+											.attr( {x: sg.x, y: sg.y, width: 16, height: 16, segment: (segments.length+1)} )
+											.collision().onHit("snake", function() {
+												if (segments.length > 1 && !scored) {
+													console.log("tail->snake: " + this.segment + "-" + segments.length + "-" + snake.crashed);
+													Crafty.e("2D, DOM, Text").attr({x: 32, y: 32, width: 256}).textFont({size: '22px', family: "Futura, Helvetica, sans-serif"}).text("YOU SCORED " + (this.segment * this.segment));
+													scored = true;
+												}
+											});
 				segments.push(s);
 			});
 
 			Crafty.c("food", {
 				init: function() {
 					this.attr({ 
-						x: Crafty.randRange(0, 31) * 16, 
-						y: Crafty.randRange(0, 31) * 16 }
+						x: Crafty.math.randomInt(0, 31) * 16, 
+						y: Crafty.math.randomInt(0, 31) * 16 }
 					).collision()
 					.onHit("snake", function() {
 						this.destroy();
