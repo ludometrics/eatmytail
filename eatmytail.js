@@ -24,6 +24,7 @@ window.onload = (function() {
 		var segments = new Array();
 		var showHint = true;
 		var scored = false;
+		var speedDelay = 500;
 		
 		var snake = Crafty.e("2D, Canvas, Mouse, Controls, Collision, snake")
 			.attr( {x: BOARD_ROWS / 2 * 16, y: BOARD_COLS / 2 * 16, width: 16, height: 16, direction: 1, frame: 1, speed: 25, crashed: false, moveQueue: 0 } )
@@ -85,13 +86,19 @@ window.onload = (function() {
 						if (this.y >= HEIGHT)
 							this.y = 0;
 					}
+
+					if (!showHint && ((this.frame % speedDelay) == 0) && this.speed > 3) {
+						// every 10 seconds, increase speed
+						this.speed--;
+						speedDelay = this.speed * 20;
+					}
 				}
 			}).collision().onHit("tail", function() {
 				if (segments.length > 1 && !this.crashed) {
 					this.crashed = true;
 				}
 			}).collision().onHit("food", function() {
-				if (this.speed > 5) this.speed = Math.round(25 - (this.length-1/2));				
+				//if (this.speed > 5) this.speed = Math.round(25 - (this.length-1/2));				
 				Crafty.e("2D, Canvas, Collision, shroom, food");
 				var sg;
 				if (segments.length > 0) {
