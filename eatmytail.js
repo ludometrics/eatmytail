@@ -1,25 +1,25 @@
 window.onload = (function() {
-	var WIDTH = 512,
-			HEIGHT  = 512,
+	var WIDTH = 256,
+			HEIGHT  = 256,
 			BOX_WIDTH = 16,
 			BOX_HEIGHT = 16,
 		  BOARD_TOP = 0,
       BOARD_LEFT = 0,
-			BOARD_ROWS = 32,
-			BOARD_COLS = 32;
+			BOARD_ROWS = 16,
+			BOARD_COLS = 16;
 	Crafty.init( WIDTH, HEIGHT );
 	Crafty.canvas.init();
 	
-	Crafty.load(["snake.png", "shroom.png", "title.png"], function() {
-		Crafty.sprite( 16, "snake.png", { snake: [0, 0] } );
-		Crafty.sprite( 16, "snake.png", { tail: [0, 0] } );
+	Crafty.load(["snake2.png", "shroom.png", "small-title.png"], function() {
+		Crafty.sprite( 16, "snake2.png", { snake: [0, 0] } );
+		Crafty.sprite( 16, "snake2.png", { tail: [0, 0] } );
 		Crafty.sprite( 16, "shroom.png", { shroom: [0, 0] } );
 		
 		Crafty.scene("main");
 	});
 	
 	Crafty.scene("main", function() {
-		Crafty.background("url('grid.png')");
+		Crafty.background("url('grid256.png')");
 		
 		var segments = new Array();
 		var showHint = true;
@@ -36,7 +36,7 @@ window.onload = (function() {
 			.bind("EnterFrame", function() {
 				this.frame++;
 				if (showHint && this.frame % 1000 == 0) {					
-					var tip = Crafty.e("2D, DOM, Tween, Image").image("hint.png", "no-repeat").attr({x: (512-176)/2, y: (512-22)/4, w: 176, h: 22, alpha: 0, z: -999})
+					var tip = Crafty.e("2D, DOM, Tween, Image").image("hint.png", "no-repeat").attr({x: (256-88)/2, y: (256-11)/4, w: 88, h: 11, alpha: 0, z: -999})
 					setTimeout( function() {
 						tip.tween({alpha: 1}, 200);				
 						setTimeout( function() {
@@ -104,8 +104,7 @@ window.onload = (function() {
 											.attr( {x: sg.x, y: sg.y, width: 16, height: 16, segment: (segments.length+1)} )
 											.collision().onHit("snake", function() {
 												if (segments.length > 1 && !scored) {
-													console.log("tail->snake: " + this.segment + "-" + segments.length + "-" + snake.crashed);
-													Crafty.e("2D, DOM, Text").attr({x: 32, y: 32, width: 256}).textFont({size: '22px', family: "Futura, Helvetica, sans-serif"}).text("YOU SCORED " + (this.segment * this.segment));
+													Crafty.e("2D, DOM, Text").attr({x: 16, y: 16, width: 256}).textFont({size: '14px', family: "Futura, Helvetica, sans-serif"}).text("YOU SCORE " + (this.segment * this.segment));
 													scored = true;
 												}
 											});
@@ -115,8 +114,8 @@ window.onload = (function() {
 			Crafty.c("food", {
 				init: function() {
 					this.attr({ 
-						x: Crafty.math.randomInt(0, 31) * 16, 
-						y: Crafty.math.randomInt(0, 31) * 16 }
+						x: Crafty.math.randomInt(0, 15) * 16, 
+						y: Crafty.math.randomInt(0, 15) * 16 }
 					).collision()
 					.onHit("snake", function() {
 						this.destroy();
@@ -125,7 +124,7 @@ window.onload = (function() {
 			});
 			
 			Crafty.e("2D, Canvas, Collision, shroom, food");
-			var bg = Crafty.e("2D, DOM, Tween, Image").image("title_shadow.png", "no-repeat").attr({x: 512-128-32, y: 512-128-32, w: 128, h: 32, alpha: 0, z: -999})
+			var bg = Crafty.e("2D, DOM, Tween, Image").image("small-title.png", "no-repeat").attr({x: 256-96-16, y: 256-64-16, w: 128, h: 32, alpha: 0, z: -999})
 			setTimeout( function() {
 				bg.tween({alpha: 1}, 300);				
 				setTimeout( function() {
