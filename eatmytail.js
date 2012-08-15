@@ -36,7 +36,7 @@ window.onload = (function() {
 			.bind("EnterFrame", function() {
 				this.frame++;
 				if (showHint && this.frame % 1000 == 0) {					
-					var tip = Crafty.e("2D, DOM, Tween, Image").image("hint.png", "no-repeat").attr({x: (256-88)/2, y: (256-11)/4, w: 88, h: 11, alpha: 0, z: -999})
+					var tip = Crafty.e("2D, DOM, Tween, Image").image("hint2.png", "no-repeat").attr({x: (256-176)/2, y: 64, w: 176, h: 16, alpha: 0, z: -999})
 					setTimeout( function() {
 						tip.tween({alpha: 1}, 200);				
 						setTimeout( function() {
