@@ -25,13 +25,29 @@ window.onload = (function() {
 		var showHint = true;
 		var scored = false;
 		var speedDelay = 500;
+		var scorePanel = null;
 		
 		var snake = Crafty.e("2D, Canvas, Mouse, Controls, Collision, snake")
 			.attr( {x: BOARD_ROWS / 2 * 16, y: BOARD_COLS / 2 * 16, width: 16, height: 16, direction: 1, frame: 1, speed: 25, crashed: false, moveQueue: 0 } )
 			.bind("KeyDown", function(e) {
 				if (e.keyCode === Crafty.keys.SPACE) {
-					showHint = false;
-					this.moveQueue += 1;
+					if (scored) {
+						console.log("should restart here");
+						scored = false;
+						speedDelay = 500;
+						segments.forEach(function (element) {
+    					element.visible = false;
+						});
+						segments = new Array();
+						this.crashed = false;
+						this.speed = 25;
+						if (scorePanel)
+							scorePanel.visible = false;
+					}
+					else {
+						showHint = false;
+						this.moveQueue += 1;
+					}
 				}
 			})
 			.bind("EnterFrame", function() {
@@ -111,7 +127,7 @@ window.onload = (function() {
 											.attr( {x: sg.x, y: sg.y, width: 16, height: 16, segment: (segments.length+1)} )
 											.collision().onHit("snake", function() {
 												if (segments.length > 1 && !scored) {
-													Crafty.e("2D, DOM, Text").attr({x: 16, y: 16, width: 256}).textFont({size: '14px', family: "Futura, Helvetica, sans-serif"}).text("YOU SCORE " + (this.segment * this.segment));
+													scorePanel = Crafty.e("2D, DOM, Text").attr({x: 16, y: 16, width: 256}).textFont({size: '14px', family: "Futura, Helvetica, sans-serif"}).text("YOU SCORE " + (this.segment * this.segment));
 													scored = true;
 												}
 											});
