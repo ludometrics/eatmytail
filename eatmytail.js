@@ -27,7 +27,7 @@ window.onload = (function() {
 		var speedDelay = 500;
 		var scorePanel = null;
 		
-		var snake = Crafty.e("2D, Canvas, Mouse, Controls, Collision, snake")
+		var snake = Crafty.e("2D, Canvas, Controls, Collision, snake")
 			.attr( {x: BOARD_ROWS / 2 * 16, y: BOARD_COLS / 2 * 16, width: 16, height: 16, direction: 1, frame: 1, speed: 25, crashed: false, moveQueue: 0 } )
 			.bind("KeyDown", function(e) {
 				if (e.keyCode === Crafty.keys.SPACE) {
@@ -152,7 +152,7 @@ window.onload = (function() {
 				bg.tween({alpha: 1}, 300);				
 				setTimeout( function() {
 					bg.tween({alpha: 0}, 300);				
-				}, 8800);
+				}, 4400);
 			}, 2200);
 	}); // main
 	
